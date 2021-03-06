@@ -1,0 +1,43 @@
+{
+  "name": "mileage-editor-api",
+  "version": "0.0.1",
+  "description": "API for the Mileage Editor app",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "esbuild --outdir=dist --platform=node --target=es2020 --format=cjs src/*.ts",
+    "check-types": "tsc --noEmit",
+    "check-types-watch": "tsc --noEmit --watch",
+    "dev": "concurrently --handle-input 'npm:check-types-watch' 'npm:start-watch'",
+    "lint": "eslint .",
+    "run": "npm run build && npm start",
+    "start": "node .",
+    "start-watch": "nodemon"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.6.3"
+  },
+  "devDependencies": {
+    "@types/mongodb": "^3.6.8",
+    "@types/node": "^14.14.31",
+    "@typescript-eslint/eslint-plugin": "^4.16.1",
+    "@typescript-eslint/parser": "^4.16.1",
+    "concurrently": "^6.0.0",
+    "esbuild": "^0.8.56",
+    "eslint": "^7.21.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7",
+    "typescript": "^4.2.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/canac/mileage-editor-api.git"
+  },
+  "author": "Caleb Cox <canac@users.noreply.github.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/canac/mileage-editor-api/issues"
+  },
+  "homepage": "https://github.com/canac/mileage-editor-api#readme"
+}
