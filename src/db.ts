@@ -1,6 +1,4 @@
-import { Db, MongoClient } from 'mongodb';
-
-let db: Db | null = null;
+import mongoose from 'mongoose';
 
 const {
   DB_PROTOCOL: protocol,
@@ -10,11 +8,7 @@ const {
 } = process.env;
 
 // eslint-disable-next-line import/prefer-default-export
-export async function getDb(): Promise<Db> {
-  if (db) {
-    return db;
-  }
-
+export async function connect(): Promise<void> {
   if ((user && !password) || (!user && password)) {
     throw new Error('Database user and password must either both be specified or neither');
   }
@@ -28,9 +22,6 @@ export async function getDb(): Promise<Db> {
   }
 
   const auth = user && password ? `${user}:${password}@` : '';
-  const uri = `${protocol}://${auth}${host}/partnerPrayer?retryWrites=true&w=majority`;
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-  await client.connect();
-  db = client.db('partnerPrayer');
-  return db;
+  const uri = `${protocol}://${auth}${host}/mileageEditor?retryWrites=true&w=majority`;
+  await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 }
