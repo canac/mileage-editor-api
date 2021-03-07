@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 
+// Allow empty strings to pass validation
+mongoose.Schema.Types.String.checkRequired((value) => typeof value === 'string');
+
 const {
   DB_PROTOCOL: protocol,
   DB_HOST: host,
