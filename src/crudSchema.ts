@@ -1,9 +1,13 @@
 import { schemaComposer } from 'graphql-compose';
 import { composeMongoose } from 'graphql-compose-mongoose';
+import { DateResolver } from 'graphql-scalars';
 import { Document, Model } from 'mongoose';
 
 import FavoritePlaceModel from './models/FavoritePlace';
 import JourneyModel from './models/Journey';
+
+// Use a different Date resolver scalar
+schemaComposer.createScalarTC(DateResolver);
 
 // Augment the GraphQL schema with CRUD operations for the provided model
 function registerModel<T extends Document>(model: Model<T>) {
