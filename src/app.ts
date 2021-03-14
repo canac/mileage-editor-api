@@ -1,9 +1,10 @@
 import 'dotenv/config';
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer, AuthenticationError } from 'apollo-server-express';
 import cors from 'cors';
 import express from 'express';
 import jwt from 'express-jwt';
 import { expressJwtSecret } from 'jwks-rsa';
+import { Context } from './context';
 import crudSchema from './crudSchema';
 import { connect } from './db';
 
@@ -27,6 +28,16 @@ app.use(jwt({
 
 const server = new ApolloServer({
   schema: crudSchema,
+  context({ req }): Context {
+    const userId = (req.user?.sub ?? null);
+    if (!userId) {
+      throw new AuthenticationError('Unknown user');
+    }
+
+    return {
+      userId,
+    };
+  },
 });
 server.applyMiddleware({ app, path: '/' });
 

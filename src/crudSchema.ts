@@ -5,6 +5,7 @@ import {
 import { composeMongoose } from 'graphql-compose-mongoose';
 import { DateResolver } from 'graphql-scalars';
 import { Document, Model, Query } from 'mongoose';
+import { Context } from './context';
 
 import FavoritePlaceModel from './models/FavoritePlace';
 import JourneyModel from './models/Journey';
@@ -12,12 +13,13 @@ import JourneyModel from './models/Journey';
 // Use a different Date resolver scalar
 schemaComposer.createScalarTC(DateResolver);
 
-const userId = 'user';
+type ResolverRbCbWithContext = ResolverRpCb<unknown, Context, unknown>;
 
 // Ensure that when a user creates a model, it is marked as their own
-function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRpCb<unknown, unknown, unknown>):
-  ResolverRpCb<unknown, unknown, unknown> {
+function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
   return (resolveParams) => {
+    const { userId } = resolveParams.context;
+
     // eslint-disable-next-line no-param-reassign
     resolveParams.beforeRecordMutate = (record: TDoc): TDoc => {
       record.set('userId', userId);
@@ -30,9 +32,10 @@ function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRpCb<unknow
 }
 
 // Ensure that only the user's own models are allowed to be modified
-function onModifyEnforceOwnModel<TDoc extends Document>(next: ResolverRpCb<unknown, unknown, unknown>):
-  ResolverRpCb<unknown, unknown, unknown> {
+function onModifyEnforceOwnModel<TDoc extends Document>(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
   return (resolveParams) => {
+    const { userId } = resolveParams.context;
+
     // eslint-disable-next-line no-param-reassign
     resolveParams.beforeRecordMutate = (record: TDoc): TDoc => {
       if (record.get('userId') === userId) {
@@ -48,9 +51,10 @@ function onModifyEnforceOwnModel<TDoc extends Document>(next: ResolverRpCb<unkno
 }
 
 // Ensure that only the user's own models are allowed to be read
-function onReadEnforceOwnModel(next: ResolverRpCb<unknown, unknown, unknown>):
-  ResolverRpCb<unknown, unknown, unknown> {
+function onReadEnforceOwnModel(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
   return (resolveParams) => {
+    const { userId } = resolveParams.context;
+
     // eslint-disable-next-line no-param-reassign
     resolveParams.beforeQuery = (query: Query<unknown, never>): void => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -66,7 +70,7 @@ function onReadEnforceOwnModel(next: ResolverRpCb<unknown, unknown, unknown>):
 type ResolversDict = {
   [key: string]: Resolver;
 }
-function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, unknown, unknown>) {
+function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, Context, unknown>) {
   return Object.fromEntries(Object.entries(resolvers).map(([name, resolver]) => [
     name,
     resolver.wrapResolve(wrapper),
