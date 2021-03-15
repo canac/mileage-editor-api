@@ -4,7 +4,7 @@
   "description": "API for the Mileage Editor app",
   "main": "dist/app.js",
   "scripts": {
-    "build": "esbuild --outdir=dist --platform=node --target=es2020 --format=cjs src/{**/,}*.ts",
+    "build": "esbuild $(find src -name '*.ts') --outdir=dist --platform=node --target=es2020 --format=cjs",
     "check-types": "tsc --noEmit",
     "check-types-watch": "tsc --noEmit --watch",
     "dev": "concurrently --handle-input 'npm:check-types-watch' 'npm:start-watch'",
