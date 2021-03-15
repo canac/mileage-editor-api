@@ -42,6 +42,9 @@
     "nodemon": "^2.0.7",
     "typescript": "^4.2.3"
   },
+  "engines": {
+    "node": ">=14"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/canac/mileage-editor-api.git"
