@@ -80,9 +80,7 @@ function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, Co
 // Augment the GraphQL schema with CRUD operations for the provided model
 function registerModel<T extends Document>(model: Model<T>) {
   const objectTypeComposer = composeMongoose(model, {
-    inputType: {
-      removeFields: ['userId'],
-    },
+    removeFields: ['userId'],
   });
   const resolvers = objectTypeComposer.mongooseResolvers;
 
