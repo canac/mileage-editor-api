@@ -1,3 +1,3 @@
-export interface Context {
+export interface ApolloContext {
   userId: string;
 }

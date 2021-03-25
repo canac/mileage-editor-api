@@ -1,11 +1,11 @@
-import { ForbiddenError } from 'apollo-server-express';
+import { ForbiddenError } from 'apollo-server-lambda';
 import {
   Resolver, ResolverNextRpCb, ResolverRpCb, schemaComposer,
 } from 'graphql-compose';
 import { composeMongoose } from 'graphql-compose-mongoose';
 import { DateResolver } from 'graphql-scalars';
 import { Document, Model, Query } from 'mongoose';
-import { Context } from './context';
+import { ApolloContext } from './context';
 
 import FavoritePlaceModel from './models/FavoritePlace';
 import JourneyModel from './models/Journey';
@@ -13,7 +13,7 @@ import JourneyModel from './models/Journey';
 // Use a different Date resolver scalar
 schemaComposer.createScalarTC(DateResolver);
 
-type ResolverRbCbWithContext = ResolverRpCb<unknown, Context, unknown>;
+type ResolverRbCbWithContext = ResolverRpCb<unknown, ApolloContext, unknown>;
 
 // Ensure that when a user creates a model, it is marked as their own
 function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
@@ -70,7 +70,7 @@ function onReadEnforceOwnModel(next: ResolverRbCbWithContext): ResolverRbCbWithC
 type ResolversDict = {
   [key: string]: Resolver;
 }
-function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, Context, unknown>) {
+function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, ApolloContext, unknown>) {
   return Object.fromEntries(Object.entries(resolvers).map(([name, resolver]) => [
     name,
     resolver.wrapResolve(wrapper),

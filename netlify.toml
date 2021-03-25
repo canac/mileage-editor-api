@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  functions = "dist/lambda"
+
+[dev]
+  autoLaunch = false
+  port = 3001
+
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/graphql"
+  status = 200

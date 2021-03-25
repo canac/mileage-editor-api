@@ -1,5 +1,5 @@
 {
   "ignore": ["dist/"],
   "ext": "ts",
-  "exec": "npm run run"
+  "exec": "npm run build"
 }
