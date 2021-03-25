@@ -6,6 +6,6 @@ esbuild.buildSync({
   entryPoints: glob.sync('src/**/*.ts'),
   outdir: 'dist',
   platform: 'node',
-  target: 'es2020',
+  target: 'node10',
   format: 'cjs',
 });
