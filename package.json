@@ -17,7 +17,7 @@
     "aws-lambda": "^1.0.6",
     "graphql": "^15.5.0",
     "graphql-compose": "^7.25.0",
-    "graphql-compose-mongoose": "^9.1.0",
+    "graphql-compose-mongoose": "^9.2.1",
     "graphql-scalars": "^1.9.0",
     "mongodb": "^3.6.3",
     "mongoose": "^5.11.19"
