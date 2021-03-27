@@ -9,6 +9,7 @@ import { ApolloContext } from './context';
 
 import FavoritePlaceModel from './models/FavoritePlace';
 import JourneyModel from './models/Journey';
+import JourneyTemplateModel from './models/JourneyTemplate';
 
 // Use a different Date resolver scalar
 schemaComposer.createScalarTC(DateResolver);
@@ -114,6 +115,7 @@ function registerModel<T extends Document>(model: Model<T>) {
 // Add all of the models to the schema
 registerModel(FavoritePlaceModel);
 registerModel(JourneyModel);
+registerModel(JourneyTemplateModel);
 
 const graphqlSchema = schemaComposer.buildSchema();
 export default graphqlSchema;
