@@ -6,7 +6,7 @@ import crudSchema from '../crudSchema';
 import { connect } from '../db';
 
 const jwt = NetlifyJwtVerifier({
-  audience: 'https://mileage-editor-api.herokuapp.com',
+  audience: 'https://mileage-editor-api.calebapps.com',
   issuer: 'https://mileage-editor.us.auth0.com/',
 });
 
