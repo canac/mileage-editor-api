@@ -1,10 +1,12 @@
 [build]
-  command = "npm run build"
-  functions = "dist/lambda"
+  functions = "src/lambda"
 
 [dev]
   autoLaunch = false
   port = 3001
+
+[functions]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/"
