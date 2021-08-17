@@ -1,6 +1,9 @@
 import { ForbiddenError } from 'apollo-server-lambda';
 import {
-  Resolver, ResolverNextRpCb, ResolverRpCb, schemaComposer,
+  Resolver,
+  ResolverNextRpCb,
+  ResolverRpCb,
+  schemaComposer,
 } from 'graphql-compose';
 import { composeMongoose } from 'graphql-compose-mongoose';
 import { DateResolver } from 'graphql-scalars';
@@ -17,7 +20,9 @@ schemaComposer.createScalarTC(DateResolver);
 type ResolverRbCbWithContext = ResolverRpCb<unknown, ApolloContext, unknown>;
 
 // Ensure that when a user creates a model, it is marked as their own
-function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
+function onCreateRecordOwnModel<TDoc extends Document>(
+  next: ResolverRbCbWithContext,
+): ResolverRbCbWithContext {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 
@@ -33,7 +38,9 @@ function onCreateRecordOwnModel<TDoc extends Document>(next: ResolverRbCbWithCon
 }
 
 // Ensure that only the user's own models are allowed to be modified
-function onModifyEnforceOwnModel<TDoc extends Document>(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
+function onModifyEnforceOwnModel<TDoc extends Document>(
+  next: ResolverRbCbWithContext,
+): ResolverRbCbWithContext {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 
@@ -52,7 +59,9 @@ function onModifyEnforceOwnModel<TDoc extends Document>(next: ResolverRbCbWithCo
 }
 
 // Ensure that only the user's own models are allowed to be read
-function onReadEnforceOwnModel(next: ResolverRbCbWithContext): ResolverRbCbWithContext {
+function onReadEnforceOwnModel(
+  next: ResolverRbCbWithContext,
+): ResolverRbCbWithContext {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 
@@ -70,12 +79,17 @@ function onReadEnforceOwnModel(next: ResolverRbCbWithContext): ResolverRbCbWithC
 // Wrap each of the resolvers in the dictionary with the provided wrapper
 type ResolversDict = {
   [key: string]: Resolver;
-}
-function wrapAll(resolvers: ResolversDict, wrapper: ResolverNextRpCb<unknown, ApolloContext, unknown>) {
-  return Object.fromEntries(Object.entries(resolvers).map(([name, resolver]) => [
-    name,
-    resolver.wrapResolve(wrapper),
-  ]));
+};
+function wrapAll(
+  resolvers: ResolversDict,
+  wrapper: ResolverNextRpCb<unknown, ApolloContext, unknown>,
+) {
+  return Object.fromEntries(
+    Object.entries(resolvers).map(([name, resolver]) => [
+      name,
+      resolver.wrapResolve(wrapper),
+    ]),
+  );
 }
 
 // Augment the GraphQL schema with CRUD operations for the provided model
@@ -88,27 +102,48 @@ function registerModel<T extends Document>(model: Model<T>) {
   const name = model.modelName;
   const prefix = name[0].toLowerCase() + name.slice(1);
 
-  schemaComposer.Query.addFields(wrapAll({
-    [`${prefix}ById`]: resolvers.findById(),
-    [`${prefix}ByIds`]: resolvers.findByIds(),
-    [`${prefix}One`]: resolvers.findOne(),
-    [`${prefix}Many`]: resolvers.findMany(),
-    [`${prefix}DataLoader`]: resolvers.dataLoader(),
-    [`${prefix}DataLoaderMany`]: resolvers.dataLoaderMany(),
-    [`${prefix}Count`]: resolvers.count(),
-    [`${prefix}Connection`]: resolvers.connection(),
-    [`${prefix}Pagination`]: resolvers.pagination(),
-  }, onReadEnforceOwnModel));
+  schemaComposer.Query.addFields(
+    wrapAll(
+      {
+        [`${prefix}ById`]: resolvers.findById(),
+        [`${prefix}ByIds`]: resolvers.findByIds(),
+        [`${prefix}One`]: resolvers.findOne(),
+        [`${prefix}Many`]: resolvers.findMany(),
+        [`${prefix}DataLoader`]: resolvers.dataLoader(),
+        [`${prefix}DataLoaderMany`]: resolvers.dataLoaderMany(),
+        [`${prefix}Count`]: resolvers.count(),
+        [`${prefix}Connection`]: resolvers.connection(),
+        [`${prefix}Pagination`]: resolvers.pagination(),
+      },
+      onReadEnforceOwnModel,
+    ),
+  );
 
   schemaComposer.Mutation.addFields({
-    [`${prefix}CreateOne`]: resolvers.createOne().wrapResolve(onCreateRecordOwnModel),
-    [`${prefix}CreateMany`]: resolvers.createMany().wrapResolve(onCreateRecordOwnModel),
-    [`${prefix}UpdateById`]: resolvers.updateById().wrapResolve(onModifyEnforceOwnModel),
-    [`${prefix}UpdateOne`]: resolvers.updateOne().wrapResolve(onModifyEnforceOwnModel),
-    [`${prefix}UpdateMany`]: resolvers.updateMany().wrapResolve(onReadEnforceOwnModel),
-    [`${prefix}RemoveById`]: resolvers.removeById().wrapResolve(onModifyEnforceOwnModel),
-    [`${prefix}RemoveOne`]: resolvers.removeOne().wrapResolve(onModifyEnforceOwnModel),
-    [`${prefix}RemoveMany`]: resolvers.removeMany().wrapResolve(onReadEnforceOwnModel),
+    [`${prefix}CreateOne`]: resolvers
+      .createOne()
+      .wrapResolve(onCreateRecordOwnModel),
+    [`${prefix}CreateMany`]: resolvers
+      .createMany()
+      .wrapResolve(onCreateRecordOwnModel),
+    [`${prefix}UpdateById`]: resolvers
+      .updateById()
+      .wrapResolve(onModifyEnforceOwnModel),
+    [`${prefix}UpdateOne`]: resolvers
+      .updateOne()
+      .wrapResolve(onModifyEnforceOwnModel),
+    [`${prefix}UpdateMany`]: resolvers
+      .updateMany()
+      .wrapResolve(onReadEnforceOwnModel),
+    [`${prefix}RemoveById`]: resolvers
+      .removeById()
+      .wrapResolve(onModifyEnforceOwnModel),
+    [`${prefix}RemoveOne`]: resolvers
+      .removeOne()
+      .wrapResolve(onModifyEnforceOwnModel),
+    [`${prefix}RemoveMany`]: resolvers
+      .removeMany()
+      .wrapResolve(onReadEnforceOwnModel),
   });
 }
 

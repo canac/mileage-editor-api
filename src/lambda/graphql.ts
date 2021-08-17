@@ -19,7 +19,8 @@ const server = new ApolloServer({
   schema: crudSchema,
   context({ context }: { context: AuthenticatedContext }): ApolloContext {
     // Extract the user ID from the claims
-    const userId: string | null = context.identityContext.claims.sub as string ?? null;
+    const userId: string | null =
+      (context.identityContext.claims.sub as string) ?? null;
     if (!userId) {
       throw new AuthenticationError('Unknown user');
     }
@@ -33,13 +34,19 @@ const server = new ApolloServer({
 // Create the Apollo GraphQL serverless handler
 const graphqlHandler = server.createHandler({
   cors: {
-    origin: [process.env.FRONTEND_ORIGIN ?? '', 'https://studio.apollographql.com'],
+    origin: [
+      process.env.FRONTEND_ORIGIN ?? '',
+      'https://studio.apollographql.com',
+    ],
     allowedHeaders: 'Origin, Content-Type, Accept, Authorization',
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
   },
 });
 
-async function requestHandler(event: APIGatewayEvent, context: Context): Promise<void | APIGatewayProxyResult> {
+async function requestHandler(
+  event: APIGatewayEvent,
+  context: Context,
+): Promise<void | APIGatewayProxyResult> {
   // Connect to the database
   await connect();
 
@@ -51,10 +58,17 @@ async function requestHandler(event: APIGatewayEvent, context: Context): Promise
 const authHandler = jwt(requestHandler);
 
 // eslint-disable-next-line import/prefer-default-export
-export function handler(event: APIGatewayEvent, context: Context): Promise<void | APIGatewayProxyResult> {
+export function handler(
+  event: APIGatewayEvent,
+  context: Context,
+): Promise<void | APIGatewayProxyResult> {
   // Don't authenticate OPTIONS requests
   if (event.httpMethod !== 'OPTIONS') {
-    return authHandler(event, context, undefined) as Promise<void | APIGatewayProxyResult>;
+    return authHandler(
+      event,
+      context,
+      undefined,
+    ) as Promise<void | APIGatewayProxyResult>;
   }
   return requestHandler(event, context);
 }

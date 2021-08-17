@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 
 // Allow empty strings to pass validation
-mongoose.Schema.Types.String.checkRequired((value) => typeof value === 'string');
+mongoose.Schema.Types.String.checkRequired(
+  (value) => typeof value === 'string',
+);
 
 const {
   DB_PROTOCOL: protocol,
@@ -13,7 +15,9 @@ const {
 // eslint-disable-next-line import/prefer-default-export
 export async function connect(): Promise<void> {
   if ((user && !password) || (!user && password)) {
-    throw new Error('Database user and password must either both be specified or neither');
+    throw new Error(
+      'Database user and password must either both be specified or neither',
+    );
   }
 
   if (!protocol) {
@@ -26,5 +30,8 @@ export async function connect(): Promise<void> {
 
   const auth = user && password ? `${user}:${password}@` : '';
   const uri = `${protocol}://${auth}${host}/mileageEditor?retryWrites=true&w=majority`;
-  await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  await mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 }
