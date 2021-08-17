@@ -17,12 +17,16 @@ import JourneyTemplateModel from './models/JourneyTemplate';
 // Use a different Date resolver scalar
 schemaComposer.createScalarTC(DateResolver);
 
-type ResolverRbCbWithContext = ResolverRpCb<unknown, ApolloContext, unknown>;
+type ResolverRbCbWithContext<TArgs> = ResolverRpCb<
+  unknown,
+  ApolloContext,
+  TArgs
+>;
 
 // Ensure that when a user creates a model, it is marked as their own
-function onCreateRecordOwnModel<TDoc extends Document>(
-  next: ResolverRbCbWithContext,
-): ResolverRbCbWithContext {
+function onCreateRecordOwnModel<TDoc extends Document, TArgs>(
+  next: ResolverRbCbWithContext<TArgs>,
+): ResolverRbCbWithContext<TArgs> {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 
@@ -38,9 +42,9 @@ function onCreateRecordOwnModel<TDoc extends Document>(
 }
 
 // Ensure that only the user's own models are allowed to be modified
-function onModifyEnforceOwnModel<TDoc extends Document>(
-  next: ResolverRbCbWithContext,
-): ResolverRbCbWithContext {
+function onModifyEnforceOwnModel<TDoc extends Document, TArgs>(
+  next: ResolverRbCbWithContext<TArgs>,
+): ResolverRbCbWithContext<TArgs> {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 
@@ -59,9 +63,9 @@ function onModifyEnforceOwnModel<TDoc extends Document>(
 }
 
 // Ensure that only the user's own models are allowed to be read
-function onReadEnforceOwnModel(
-  next: ResolverRbCbWithContext,
-): ResolverRbCbWithContext {
+function onReadEnforceOwnModel<TArgs>(
+  next: ResolverRbCbWithContext<TArgs>,
+): ResolverRbCbWithContext<TArgs> {
   return (resolveParams) => {
     const { userId } = resolveParams.context;
 

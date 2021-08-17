@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
-export default mongoose.model(
+export default mongoose.model<Document>(
   'Journey',
   new mongoose.Schema({
     userId: { type: String, required: true },
