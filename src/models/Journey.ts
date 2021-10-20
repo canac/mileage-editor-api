@@ -9,5 +9,6 @@ export default mongoose.model<Document>(
     from: { type: String, required: true },
     to: { type: String, required: true },
     miles: { type: Number, required: true },
+    tolls: { type: Number, required: true },
   }),
 );
